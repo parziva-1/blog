@@ -1,0 +1,19 @@
+[
+  {
+    "id": "DC_kwDOVq0Crs4BKkK7",
+    "author": "parziva-1",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/32104719?u=677b3d667a5363e464944e98b4d3bb40b4c2cd45&v=4",
+    "url": "https://github.com/parziva-1/blog/discussions/1#discussioncomment-19546811",
+    "createdAt": "2026-11-11T17:06:41Z",
+    "hash": "b0910c16fd1efcd3",
+    "translated": false,
+    "original": {
+      "lang": "en",
+      "markdown": "Great write-up! I tried `--n-cpu-moe 44` on my RTX 3060 and generation went from 18 to 27 tok/s. Did you notice any **quality loss** with the KV cache in q4_0?\n\n```bash\nllama-server -c 32768 --n-cpu-moe 44\n```"
+    },
+    "translations": {
+      "en": "Great write-up! I tried `--n-cpu-moe 44` on my RTX 3060 and generation went from 18 to 27 tok/s. Did you notice any **quality loss** with the KV cache in q4_0?\n\n```bash\nllama-server -c 32768 --n-cpu-moe 44\n```"
+    },
+    "replies": []
+  }
+]
