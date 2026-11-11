@@ -23,7 +23,7 @@ pnpm build      # astro check + build; los borradores se excluyen
 - Las dos versiones de una nota comparten UN hilo de Discussions (`mapping=specific`, término = `translationKey`).
 - `scripts/sync-comments.mjs` copia los comentarios a `src/data/comments/<translationKey>.json` y guarda siempre original y traducción (es + en). `.github/workflows/comments.yml` lo ejecuta ante cada comentario y cada 6 h, hace commit del JSON y despliega Pages.
 - Traductor (cualquier API compatible con OpenAI chat-completions). El predeterminado es el plan gratuito de Groq. Variables del repo (Settings → Secrets and variables → Actions):
-  - Variable `TRANSLATOR` = `openai` (o `none` para guardar solo originales, marcados sin traducir).
+  - Variable `TRANSLATOR` = `groq` (o `none` para guardar solo originales, marcados sin traducir).
   - Variable `TRANSLATE_MODEL` = id del modelo de tu proveedor (obligatoria con `openai`).
   - Variable `TRANSLATE_BASE_URL` (opcional, por defecto `https://api.groq.com/openai/v1`).
   - Secreto `TRANSLATE_API_KEY`.

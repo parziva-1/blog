@@ -3,7 +3,8 @@
 //
 // Env:
 //   GITHUB_TOKEN        required (discussions: read is enough)
-//   TRANSLATOR          none (default) | openai   ("openai" = any OpenAI-compatible chat-completions API)
+//   TRANSLATOR          none (default) | groq | openai   (both mean "an OpenAI-compatible chat-completions API";
+//                       groq is the free default, no OpenAI account involved)
 //   TRANSLATE_BASE_URL  default https://api.groq.com/openai/v1
 //   TRANSLATE_MODEL     required when TRANSLATOR=openai (repo variable)
 //   TRANSLATE_API_KEY   required when TRANSLATOR=openai (repo secret)
@@ -24,7 +25,8 @@ const MAX_TRANSLATIONS = 50;
 
 const env = (k, d = "") => (process.env[k] ?? d).trim();
 const TOKEN = env("GITHUB_TOKEN");
-const TRANSLATOR = env("TRANSLATOR", "none").toLowerCase();
+const RAW_TRANSLATOR = env("TRANSLATOR", "none").toLowerCase();
+const TRANSLATOR = RAW_TRANSLATOR === "groq" ? "openai" : RAW_TRANSLATOR;
 const BASE_URL = env("TRANSLATE_BASE_URL", "https://api.groq.com/openai/v1").replace(/\/+$/, "");
 const MODEL = env("TRANSLATE_MODEL");
 const API_KEY = env("TRANSLATE_API_KEY");
@@ -36,7 +38,7 @@ const fail = (msg) => {
 };
 
 if (!TOKEN) fail("GITHUB_TOKEN is not set");
-if (!["none", "openai"].includes(TRANSLATOR)) fail(`TRANSLATOR must be "none" or "openai" (got "${TRANSLATOR}")`);
+if (!["none", "openai"].includes(TRANSLATOR)) fail(`TRANSLATOR must be "none", "groq" or "openai" (got "${RAW_TRANSLATOR}")`);
 if (TRANSLATOR === "openai") {
   if (!MODEL) fail("TRANSLATE_MODEL is not set: define the repo variable TRANSLATE_MODEL with a model id from your provider");
   if (!API_KEY) fail("TRANSLATE_API_KEY is not set: define the repo secret TRANSLATE_API_KEY");
