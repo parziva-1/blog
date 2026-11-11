@@ -23,7 +23,8 @@ const OUT = process.env.COMMENTS_DIR ?? join(ROOT, "src", "data", "comments");
 const MAX_CHARS = 4000;
 const MAX_TRANSLATIONS = 50;
 
-const env = (k, d = "") => (process.env[k] ?? d).trim();
+// GitHub Actions passes unset vars as "", so an empty value must fall back to the default too.
+const env = (k, d = "") => (process.env[k] ?? "").trim() || d;
 const TOKEN = env("GITHUB_TOKEN");
 const RAW_TRANSLATOR = env("TRANSLATOR", "none").toLowerCase();
 const TRANSLATOR = RAW_TRANSLATOR === "groq" ? "openai" : RAW_TRANSLATOR;
