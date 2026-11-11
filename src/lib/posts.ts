@@ -8,8 +8,12 @@ const includeDrafts = import.meta.env.DEV || process.env.SHOW_DRAFTS === "1";
 
 export const slugOf = (p: Post) => (p.id.split("/").at(-1) ?? p.id).replace(/\.(md|mdx)$/, "");
 
+// Scheduled publishing: a post with a future pubDate stays hidden until a build runs after that moment
+// (deploy.yml rebuilds daily). Drafts/local preview (SHOW_DRAFTS=1, dev) show everything.
+const isLive = (p: Post) => !p.data.draft && p.data.pubDate.valueOf() <= Date.now();
+
 export async function getPosts(lang?: Lang): Promise<Post[]> {
-  const all = await getCollection("posts", (p) => (includeDrafts || !p.data.draft) && (!lang || p.data.lang === lang));
+  const all = await getCollection("posts", (p) => (includeDrafts || isLive(p)) && (!lang || p.data.lang === lang));
   return all.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 }
 

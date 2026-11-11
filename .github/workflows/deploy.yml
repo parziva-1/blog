@@ -3,6 +3,9 @@ name: Deploy
 on:
   push:
     branches: [main]
+  schedule:
+    # Daily rebuild at 08:05 Bogotá so posts with a future pubDate go live on their date.
+    - cron: "5 13 * * *"
   workflow_dispatch:
 
 permissions:

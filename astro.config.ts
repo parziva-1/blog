@@ -4,6 +4,7 @@ import { unified } from "@astrojs/markdown-remark";
 import remarkCallouts from "./src/lib/remark-callouts";
 import rehypeHeadings from "./src/lib/rehype-headings";
 import rehypeTables from "./src/lib/rehype-tables";
+import rehypeFutureLinks from "./src/lib/rehype-future-links";
 import { codeBlockTransformer } from "./src/lib/shiki-code-block";
 
 export default defineConfig({
@@ -27,7 +28,7 @@ export default defineConfig({
   markdown: {
     processor: unified({
       remarkPlugins: [remarkCallouts],
-      rehypePlugins: [rehypeHeadings, rehypeTables],
+      rehypePlugins: [rehypeHeadings, rehypeTables, rehypeFutureLinks],
     }),
     shikiConfig: {
       themes: { light: "github-light", dark: "github-dark" },

@@ -559,3 +559,6 @@ a.cat-badge:hover { color: var(--ink); background: color-mix(in oklab, var(--cat
 .post-layout > * { min-width: 0; }
 .prose { overflow-wrap: break-word; }
 .prose a { overflow-wrap: anywhere; }
+
+/* Link to a series part that is scheduled but not published yet */
+.link-soon { color: var(--muted); text-decoration: underline dotted var(--rule); text-underline-offset: 3px; }
