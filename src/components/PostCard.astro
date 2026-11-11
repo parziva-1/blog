@@ -1,0 +1,28 @@
+---
+import CatBadge from "./CatBadge.astro";
+import { t, paths, formatDate, type Lang } from "@/i18n";
+import { slugOf, readingMinutes, type Post } from "@/lib/posts";
+interface Props { post: Post; lang: Lang }
+const { post, lang } = Astro.props;
+const s = t(lang);
+const d = post.data;
+---
+<article class={`post-card cat-${d.category}`}>
+  <CatBadge cat={d.category} lang={lang} />
+  <div class="post-card-meta">
+    <time datetime={d.pubDate.toISOString()}>{formatDate(d.pubDate, lang)}</time> · {s.minRead(readingMinutes(post))}{d.draft ? " · DRAFT" : ""}
+  </div>
+  <h2 class="post-card-title"><a href={paths.post(lang, slugOf(post))}>{d.title}</a></h2>
+  <p class="post-card-desc">{d.description}</p>
+  {d.tags.length > 0 && (
+    <ul class="tag-list">
+      {d.tags.map((x) => <li><a class="tag" href={paths.tag(lang, x)}>{x}</a></li>)}
+    </ul>
+  )}
+  {d.metric && (
+    <div class="metric">
+      <div class="metric-value">{d.metric.value}</div>
+      <div class="metric-label">{d.metric.label}</div>
+    </div>
+  )}
+</article>

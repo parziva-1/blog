@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://parziva1.qzz.io/sitemap-index.xml

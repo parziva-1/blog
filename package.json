@@ -1,0 +1,57 @@
+{
+  "name": "blog",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Notas y experimentos: LLMs locales en hardware modesto, Linux, homelab y automatización.",
+  "author": "parziva1",
+  "homepage": "https://parziva1.qzz.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/parziva-1/blog.git"
+  },
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "sync-comments": "node scripts/sync-comments.mjs",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@astrojs/markdown-remark": "^7.3.6",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/pixelify-sans": "^5.3.0",
+    "@fontsource-variable/space-grotesk": "^5.3.0",
+    "@fontsource/ibm-plex-sans": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/pixelify-sans": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0",
+    "@types/hast": "^3.0.5",
+    "@types/mdast": "^4.0.4",
+    "astro": "^7.4.8",
+    "github-slugger": "^2.0.0",
+    "hast-util-to-string": "^3.0.1",
+    "rehype-sanitize": "^6.0.0",
+    "rehype-stringify": "^10.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "satori": "^0.63.2",
+    "sharp": "^0.35.5",
+    "typescript": "^6.0.3",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.2.0"
+  },
+  "packageManager": "pnpm@11.9.0",
+  "devDependencies": {
+    "shiki": "^4.6.0",
+    "vfile": "^6.0.3"
+  }
+}

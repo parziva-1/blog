@@ -1,0 +1,34 @@
+---
+import CommentItem from "./CommentItem.astro";
+import { formatDate, t, type Lang } from "@/i18n";
+import type { ViewComment } from "@/lib/comments";
+interface Props { c: ViewComment; lang: Lang; reply?: boolean }
+const { c, lang, reply = false } = Astro.props;
+const s = t(lang).comments;
+const translated = c.originalHtml !== null;
+---
+<li class="comment" id={`c-${c.id}`}>
+  <div class="comment-head">
+    {c.avatar && <img src={c.avatar} alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer" />}
+    {c.authorUrl ? <a class="author" href={c.authorUrl} rel="nofollow ugc noopener">{c.author}</a> : <span class="author">{c.author}</span>}
+    {c.url ? (
+      <a href={c.url} rel="nofollow ugc noopener"><time datetime={c.createdAt.toISOString()}>{formatDate(c.createdAt, lang)}</time></a>
+    ) : (
+      <time datetime={c.createdAt.toISOString()}>{formatDate(c.createdAt, lang)}</time>
+    )}
+    {reply && <span>↳ {s.reply}</span>}
+    {translated && <span class="comment-lang">{s.translatedFrom(c.originalLang)}</span>}
+    {translated && (
+      <button class="show-original" type="button" aria-pressed="false" data-label-original={s.showOriginal} data-label-translation={s.showTranslation}>{s.showOriginal}</button>
+    )}
+  </div>
+  <div class="comment-body">
+    <div data-view="shown" lang={c.htmlLang} set:html={c.html} />
+    {translated && <div data-view="original" lang={c.originalLang} hidden set:html={c.originalHtml} />}
+  </div>
+  {c.replies.length > 0 && (
+    <ul class="comment-list" style="margin:0.85rem 0 0">
+      {c.replies.map((r) => <CommentItem c={r} lang={lang} reply />)}
+    </ul>
+  )}
+</li>

@@ -1,0 +1,13 @@
+---
+import Base from "@/layouts/Base.astro";
+import { t, paths } from "@/i18n";
+const es = t("es");
+const en = t("en");
+---
+<Base title={es.notFound.title} description={es.notFound.text} lang="es" path="/404.html" noindex noAlternates>
+  <div class="container" style="padding-top:4rem">
+    <h1 class="post-title">404</h1>
+    <p>{es.notFound.text} <a href={paths.home("es")}>{es.notFound.home}</a></p>
+    <p lang="en">{en.notFound.text} <a href={paths.home("en")}>{en.notFound.home}</a></p>
+  </div>
+</Base>

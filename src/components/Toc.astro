@@ -1,0 +1,26 @@
+---
+import { t, type Lang } from "@/i18n";
+interface Props { headings: { depth: number; slug: string; text: string }[]; lang: Lang }
+const { headings, lang } = Astro.props;
+const items = headings.filter((h) => h.depth === 2);
+---
+{items.length > 0 && (
+  <nav class="toc" aria-label={t(lang).toc}>
+    <details open>
+      <summary>{t(lang).toc}</summary>
+      <div class="toc-inner">
+        <ol>
+          {items.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+        </ol>
+      </div>
+    </details>
+  </nav>
+)}
+<script is:inline>
+  // Collapse the TOC on small screens (it is a sticky sidebar on wide ones).
+  (function () {
+    var d = document.querySelector(".toc details");
+    if (d && window.matchMedia && !matchMedia("(min-width: 1200px)").matches) d.removeAttribute("open");
+    else if (d) d.setAttribute("open", "");
+  })();
+</script>

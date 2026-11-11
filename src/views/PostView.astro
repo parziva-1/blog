@@ -1,0 +1,103 @@
+---
+import { render } from "astro:content";
+import Base from "@/layouts/Base.astro";
+import CatBadge from "@/components/CatBadge.astro";
+import Toc from "@/components/Toc.astro";
+import Cta from "@/components/Cta.astro";
+import Comments from "@/components/Comments.astro";
+import { SITE } from "@/config/site";
+import { t, paths, otherLang, formatDate, type Lang } from "@/i18n";
+import { getCounterpart, readingMinutes, slugOf, type Post } from "@/lib/posts";
+
+interface Props { post: Post }
+const { post } = Astro.props;
+const d = post.data;
+const lang = d.lang as Lang;
+const s = t(lang);
+const slug = slugOf(post);
+const { Content, headings } = await render(post);
+const counterpart = await getCounterpart(post);
+const other = otherLang(lang);
+const path = paths.post(lang, slug);
+const alternates = {
+  [lang]: path,
+  ...(counterpart ? { [other]: paths.post(other, slugOf(counterpart)) } : {}),
+} as Partial<Record<Lang, string>>;
+const url = new URL(path, SITE.url).href;
+const ogPath = paths.og(lang, slug);
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: d.title,
+    description: d.description,
+    datePublished: d.pubDate.toISOString(),
+    dateModified: (d.updatedDate ?? d.pubDate).toISOString(),
+    inLanguage: lang,
+    url,
+    mainEntityOfPage: url,
+    image: new URL(ogPath, SITE.url).href,
+    keywords: d.tags.join(", "),
+    author: { "@type": "Person", name: SITE.author, url: SITE.github },
+    publisher: { "@type": "Person", name: SITE.author },
+  },
+];
+---
+<Base
+  title={d.title}
+  description={d.description}
+  lang={lang}
+  path={path}
+  alternates={alternates}
+  ogImage={ogPath}
+  type="article"
+  published={d.pubDate}
+  modified={d.updatedDate ?? d.pubDate}
+  tags={d.tags}
+  jsonLd={jsonLd}
+  noindex={d.draft}
+  progress
+>
+  <article class={`cat-${d.category}`}>
+    <header class="post-header">
+      <div class="container">
+        <nav class="breadcrumbs" aria-label="breadcrumb">
+          <a href={paths.home(lang)}>{s.breadcrumbHome}</a> / <a href={paths.category(lang, d.category)}>{s.categoryLabel[d.category]}</a>
+        </nav>
+        <h1 class="post-title">{d.title}</h1>
+        <p class="post-meta">
+          <time datetime={d.pubDate.toISOString()}>{formatDate(d.pubDate, lang)}</time>
+          <span>{s.minRead(readingMinutes(post))}</span>
+          {d.updatedDate && <span>{s.updated} <time datetime={d.updatedDate.toISOString()}>{formatDate(d.updatedDate, lang)}</time></span>}
+          {counterpart && <a class="alt-lang" href={alternates[other]} hreflang={other} lang={other}>{s.readInOther}</a>}
+          {d.draft && <span>DRAFT</span>}
+        </p>
+        <CatBadge cat={d.category} lang={lang} />
+        {(d.specs || d.metric) && (
+          <div class="post-hero">
+            {d.specs && (
+              <dl class="spec-sheet">
+                {d.specs.map((x) => (<><dt>{x.label}</dt><dd>{x.value}</dd></>))}
+              </dl>
+            )}
+            {d.metric && (
+              <div class="metric">
+                <div class="metric-value">{d.metric.value}</div>
+                <div class="metric-label">{d.metric.label}</div>
+              </div>
+            )}
+          </div>
+        )}
+        {d.repo && <p class="repo-button"><a class="btn" href={d.repo} rel="noopener">{s.repoButton}</a></p>}
+      </div>
+    </header>
+    <div class="container post-layout">
+      <Toc headings={headings} lang={lang} />
+      <div>
+        <div class="prose" lang={lang}><Content /></div>
+        <Cta lang={lang} url={url} title={d.title} />
+        <Comments translationKey={d.translationKey} lang={lang} />
+      </div>
+    </div>
+  </article>
+</Base>

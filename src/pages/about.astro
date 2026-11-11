@@ -1,0 +1,13 @@
+---
+import Base from "@/layouts/Base.astro";
+import { t, paths } from "@/i18n";
+const lang = "es";
+const s = t(lang);
+---
+<Base title={s.about.title} description={s.about.description} lang={lang} path={paths.about(lang)}
+  alternates={{ es: paths.about("es"), en: paths.about("en") }}>
+  <div class="container" style="padding-top:3rem">
+    <h1 class="post-title">{s.about.title}</h1>
+    <div class="prose">{s.about.body.map((p) => <p>{p}</p>)}</div>
+  </div>
+</Base>

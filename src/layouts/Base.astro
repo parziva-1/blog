@@ -1,0 +1,149 @@
+---
+import "@fontsource-variable/space-grotesk";
+import "@fontsource-variable/pixelify-sans";
+import "@fontsource/ibm-plex-sans/400.css";
+import "@fontsource/ibm-plex-sans/500.css";
+import "@fontsource/ibm-plex-sans/600.css";
+import "@fontsource/ibm-plex-sans/400-italic.css";
+import "@fontsource-variable/jetbrains-mono";
+import "@/styles/global.css";
+import { SITE } from "@/config/site";
+import { t, paths, otherLang, type Lang } from "@/i18n";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  lang: Lang;
+  /** Path of this page (leading slash), used for canonical. */
+  path: string;
+  /** Counterpart URLs by language; missing entries fall back to that language's home. */
+  alternates?: Partial<Record<Lang, string>>;
+  ogImage?: string;
+  type?: "website" | "article";
+  jsonLd?: object[];
+  published?: Date;
+  modified?: Date;
+  tags?: string[];
+  noindex?: boolean;
+  progress?: boolean;
+  /** Skip the hreflang block (404). */
+  noAlternates?: boolean;
+}
+const { title, description, lang, path, alternates = {}, ogImage, type = "website", jsonLd = [], published, modified, tags = [], noindex, progress, noAlternates } = Astro.props;
+const s = t(lang);
+const abs = (p: string) => new URL(p, SITE.url).href;
+const canonical = abs(path);
+const alt = (l: Lang) => abs(alternates[l] ?? paths.home(l));
+const fullTitle = title === s.siteTitle ? title : `${title} · ${SITE.name}`;
+const img = abs(ogImage ?? paths.og(lang, "home"));
+const ld = jsonLd.map((o) => JSON.stringify(o).replace(/</g, "\\u003c"));
+const ogLocale = (l: Lang) => (l === "es" ? "es_ES" : "en_US");
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {!noAlternates && (
+      <>
+        <link rel="alternate" hreflang="es" href={alt("es")} />
+        <link rel="alternate" hreflang="en" href={alt("en")} />
+        <link rel="alternate" hreflang="x-default" href={alt("es")} />
+      </>
+    )}
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.name} (${lang})`} href={abs(paths.rss(lang))} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#f7f5ef" />
+
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={img} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={ogLocale(lang)} />
+    <meta property="og:locale:alternate" content={ogLocale(otherLang(lang))} />
+    {type === "article" && published && <meta property="article:published_time" content={published.toISOString()} />}
+    {type === "article" && modified && <meta property="article:modified_time" content={modified.toISOString()} />}
+    {type === "article" && tags.map((x) => <meta property="article:tag" content={x} />)}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={SITE.xHandle} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={img} />
+
+    {ld.map((j) => <script type="application/ld+json" set:html={j} />)}
+
+    <script is:inline>
+      try {
+        var th = localStorage.getItem("theme");
+        if (th === "light" || th === "dark") document.documentElement.dataset.theme = th;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    {progress && <div class="reading-progress" aria-hidden="true"></div>}
+    <a class="skip-link" href="#main">{s.skip}</a>
+    <div class="site">
+      <Header lang={lang} path={path} alternates={alternates} />
+      <main id="main">
+        <slot />
+      </main>
+      <Footer lang={lang} />
+    </div>
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        var lang = root.lang === "en" ? "en" : "es";
+        var L = lang === "en" ? { copy: "Copy", copied: "Copied" } : { copy: "Copiar", copied: "Copiado" };
+        function effective() {
+          var d = root.dataset.theme;
+          if (d === "light" || d === "dark") return d;
+          return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        window.__siteTheme = effective;
+        var tg = document.querySelector(".theme-toggle");
+        if (tg) tg.addEventListener("click", function () {
+          var next = effective() === "dark" ? "light" : "dark";
+          root.dataset.theme = next;
+          try { localStorage.setItem("theme", next); } catch (e) {}
+          var f = document.querySelector("iframe.giscus-frame");
+          if (f && f.contentWindow) f.contentWindow.postMessage({ giscus: { setConfig: { theme: next } } }, "https://giscus.app");
+        });
+        document.querySelectorAll(".copy-btn").forEach(function (b) {
+          b.textContent = L.copy;
+          b.addEventListener("click", function () {
+            var pre = b.parentElement && b.parentElement.querySelector("pre");
+            if (!pre || !navigator.clipboard) return;
+            navigator.clipboard.writeText(pre.innerText).then(function () {
+              b.textContent = L.copied;
+              setTimeout(function () { b.textContent = L.copy; }, 1500);
+            }).catch(function () {});
+          });
+        });
+        document.querySelectorAll(".show-original").forEach(function (b) {
+          b.addEventListener("click", function () {
+            var box = b.closest(".comment");
+            var body = box && box.querySelector(".comment-body");
+            if (!body) return;
+            var shown = body.querySelector("[data-view=shown]");
+            var orig = body.querySelector("[data-view=original]");
+            var showingOrig = !orig.hidden;
+            orig.hidden = showingOrig;
+            shown.hidden = !showingOrig;
+            b.textContent = showingOrig ? b.dataset.labelOriginal : b.dataset.labelTranslation;
+            b.setAttribute("aria-pressed", String(!showingOrig));
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

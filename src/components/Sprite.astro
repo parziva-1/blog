@@ -1,0 +1,21 @@
+---
+import ia from "@/assets/sprites/ia.svg?raw";
+import android from "@/assets/sprites/android.svg?raw";
+import hardware from "@/assets/sprites/hardware.svg?raw";
+import gamedev from "@/assets/sprites/gamedev.svg?raw";
+import code from "@/assets/sprites/code.svg?raw";
+import homelab from "@/assets/sprites/homelab.svg?raw";
+import linux from "@/assets/sprites/linux.svg?raw";
+import type { Category } from "@/i18n";
+
+interface Props {
+  name: Category;
+  size?: "lg" | "xl";
+  /** Wrap in its own .cat-<key> span (hero constellation). Default true. */
+  bare?: boolean;
+}
+const SPRITES: Record<Category, string> = { ia, android, hardware, gamedev, code, homelab, linux };
+const { name, size, bare = false } = Astro.props;
+const cls = bare ? "sprite" : `sprite cat-${name}`;
+---
+<span class:list={[cls, size && `sprite-${size}`]} aria-hidden="true" set:html={SPRITES[name]} />

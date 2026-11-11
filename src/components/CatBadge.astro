@@ -1,0 +1,12 @@
+---
+import Sprite from "./Sprite.astro";
+import { t, paths, type Category, type Lang } from "@/i18n";
+interface Props { cat: Category; lang: Lang; link?: boolean }
+const { cat, lang, link = true } = Astro.props;
+const label = t(lang).categoryLabel[cat];
+---
+{link ? (
+  <a class={`cat-badge cat-${cat}`} href={paths.category(lang, cat)}><Sprite name={cat} bare />{label}</a>
+) : (
+  <span class={`cat-badge cat-${cat}`}><Sprite name={cat} bare />{label}</span>
+)}

@@ -1,0 +1,36 @@
+---
+import Base from "@/layouts/Base.astro";
+import PostCard from "@/components/PostCard.astro";
+import { t, paths, type Lang } from "@/i18n";
+import type { Post } from "@/lib/posts";
+
+interface Props {
+  lang: Lang;
+  heading: string;
+  description: string;
+  path: string;
+  alternates: Partial<Record<Lang, string>>;
+  posts: Post[];
+  tags?: string[];
+}
+const { lang, heading, description, path, alternates, posts, tags } = Astro.props;
+const s = t(lang);
+---
+<Base title={heading} description={description} lang={lang} path={path} alternates={alternates} ogImage={paths.og(lang, "home")}>
+  <div class="container" style="padding-top:3rem">
+    <h1 class="post-title">{heading}</h1>
+    {tags ? (
+      tags.length === 0 ? <p class="comments-empty">{s.noPosts}</p> : (
+        <ul class="tag-list" style="margin-top:1.5rem">
+          {tags.map((x) => <li><a class="tag" href={paths.tag(lang, x)}>{x}</a></li>)}
+        </ul>
+      )
+    ) : posts.length === 0 ? (
+      <p class="comments-empty">{s.noPosts}</p>
+    ) : (
+      <div class="post-list" style="margin-top:2rem">
+        {posts.map((p) => <PostCard post={p} lang={lang} />)}
+      </div>
+    )}
+  </div>
+</Base>

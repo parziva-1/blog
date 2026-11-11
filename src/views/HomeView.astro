@@ -1,0 +1,63 @@
+---
+import Base from "@/layouts/Base.astro";
+import PostCard from "@/components/PostCard.astro";
+import Sprite from "@/components/Sprite.astro";
+import CatBadge from "@/components/CatBadge.astro";
+import { SITE } from "@/config/site";
+import { t, paths, CATEGORIES, type Lang } from "@/i18n";
+import { getPosts } from "@/lib/posts";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const s = t(lang);
+const posts = (await getPosts(lang)).slice(0, 12);
+const [a, b, c] = s.hero.title;
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE.name,
+    url: new URL(paths.home(lang), SITE.url).href,
+    description: s.tagline,
+    inLanguage: lang,
+    author: { "@type": "Person", name: SITE.author, url: SITE.github },
+  },
+];
+---
+<Base
+  title={s.siteTitle}
+  description={s.tagline}
+  lang={lang}
+  path={paths.home(lang)}
+  alternates={{ es: paths.home("es"), en: paths.home("en") }}
+  ogImage={paths.og(lang, "home")}
+  jsonLd={jsonLd}
+>
+  <section class="hero grid-paper">
+    <div class="container">
+      <p class="hero-kicker">{s.hero.kicker}</p>
+      <h1 class="hero-title">{a}<em>{b}</em>{c}</h1>
+      <p class="hero-lede">{s.hero.lede}</p>
+      <div class="hero-links">
+        <a class="btn" href={SITE.github} rel="noopener">GitHub</a>
+        <a class="btn-ghost" href={SITE.x} rel="noopener">X</a>
+      </div>
+      <ul class="cat-strip" aria-label={s.categories}>
+        {CATEGORIES.map((k) => <li><CatBadge cat={k} lang={lang} /></li>)}
+      </ul>
+    </div>
+    <div class="hero-sprites" aria-hidden="true">
+      {CATEGORIES.map((k) => <Sprite name={k} />)}
+    </div>
+  </section>
+  <div class="container">
+    <h2 class="section-label">{s.latest}</h2>
+    {posts.length === 0 ? (
+      <p class="comments-empty">{s.noPosts}</p>
+    ) : (
+      <div class="post-list">
+        {posts.map((p) => <PostCard post={p} lang={lang} />)}
+      </div>
+    )}
+  </div>
+</Base>

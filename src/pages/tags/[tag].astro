@@ -1,0 +1,18 @@
+---
+import ListView from "@/views/ListView.astro";
+import { t, paths, otherLang } from "@/i18n";
+import { getPosts, uniqueTags } from "@/lib/posts";
+
+export async function getStaticPaths() {
+  const posts = await getPosts("es");
+  return uniqueTags(posts).map((tag) => ({ params: { tag }, props: { posts: posts.filter((p) => p.data.tags.includes(tag)) } }));
+}
+const lang = "es";
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+const other = otherLang(lang);
+const inOther = (await getPosts(other)).some((p) => p.data.tags.includes(tag!));
+const alternates = { [lang]: paths.tag(lang, tag!), ...(inOther ? { [other]: paths.tag(other, tag!) } : {}) };
+---
+<ListView lang={lang} heading={t(lang).tagPage(tag!)} description={`${t(lang).tagPage(tag!)} · ${t(lang).postsCount(posts.length)}`}
+  path={paths.tag(lang, tag!)} alternates={alternates} posts={posts} />

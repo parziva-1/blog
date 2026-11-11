@@ -1,0 +1,13 @@
+dist/
+.astro/
+node_modules/
+.env
+.env.*
+.DS_Store
+.idea/
+.pnpm-store
+npm-debug.log*
+pnpm-debug.log*
+
+# Borradores: solo en local, nunca en el repo público
+src/content/drafts/

@@ -1,0 +1,17 @@
+---
+import { SITE } from "@/config/site";
+import { t, type Lang } from "@/i18n";
+interface Props { lang: Lang; url: string; title: string }
+const { lang, url, title } = Astro.props;
+const s = t(lang).cta;
+const share = `https://x.com/intent/post?${new URLSearchParams({ text: s.shareText(title), url, via: SITE.xHandle.slice(1) }).toString()}`;
+---
+<aside class="cta">
+  <h2>{s.title}</h2>
+  <p>{s.text}</p>
+  <div class="cta-actions">
+    <a class="btn" href={SITE.github} rel="noopener">{s.github}</a>
+    <a class="btn-ghost" href={SITE.x} rel="noopener">{s.x}</a>
+    <a class="btn-accent" href={share} rel="noopener" target="_blank">{s.share}</a>
+  </div>
+</aside>

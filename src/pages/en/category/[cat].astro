@@ -1,0 +1,16 @@
+---
+import ListView from "@/views/ListView.astro";
+import { t, paths, CATEGORIES, type Category } from "@/i18n";
+import { getPosts } from "@/lib/posts";
+
+export async function getStaticPaths() {
+  const posts = await getPosts("en");
+  return CATEGORIES.map((cat) => ({ params: { cat }, props: { posts: posts.filter((p) => p.data.category === cat) } }));
+}
+const lang = "en";
+const cat = Astro.params.cat as Category;
+const { posts } = Astro.props;
+const name = t(lang).categoryLabel[cat];
+---
+<ListView lang={lang} heading={t(lang).categoryPage(name)} description={`${name} · ${t(lang).postsCount(posts.length)}`}
+  path={paths.category(lang, cat)} alternates={{ es: paths.category("es", cat), en: paths.category("en", cat) }} posts={posts} />

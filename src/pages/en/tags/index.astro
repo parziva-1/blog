@@ -1,0 +1,9 @@
+---
+import ListView from "@/views/ListView.astro";
+import { t, paths } from "@/i18n";
+import { getPosts, uniqueTags } from "@/lib/posts";
+const lang = "en";
+const tags = uniqueTags(await getPosts(lang));
+---
+<ListView lang={lang} heading={t(lang).tagsTitle} description={t(lang).tagline} path={paths.tags(lang)}
+  alternates={{ es: paths.tags("es"), en: paths.tags("en") }} posts={[]} tags={tags} />

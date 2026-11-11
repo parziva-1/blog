@@ -1,0 +1,17 @@
+---
+import { SITE } from "@/config/site";
+import { t, paths, type Lang } from "@/i18n";
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const s = t(lang);
+---
+<footer class="site-footer">
+  <div class="container">
+    <p>© {new Date().getFullYear()} {SITE.author} · {s.footer}</p>
+    <p>
+      <a href={SITE.github} rel="me noopener">GitHub</a> ·
+      <a href={SITE.x} rel="me noopener">X</a> ·
+      <a href={paths.rss(lang)}>{s.rss}</a>
+    </p>
+  </div>
+</footer>

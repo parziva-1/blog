@@ -1,0 +1,61 @@
+# Mirrors GitHub Discussions comments into src/data/comments/*.json (with translations),
+# commits them if they changed and redeploys the site. A push made with GITHUB_TOKEN does not
+# trigger deploy.yml, so this workflow builds and deploys by itself.
+name: Sync comments
+
+on:
+  discussion_comment:
+    types: [created, edited, deleted]
+  discussion:
+    types: [created]
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  discussions: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: comments-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Sync and translate
+        env:
+          GITHUB_TOKEN: }
+          TRANSLATOR: }
+          TRANSLATE_BASE_URL: }
+          TRANSLATE_MODEL: }
+          TRANSLATE_API_KEY: }
+        run: node scripts/sync-comments.mjs
+      - name: Commit changes
+        id: commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A src/data/comments
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(comments): sync discussions"
+            git push
+          fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  pages:
+    needs: sync
+    uses: ./.github/workflows/pages.yml
+    with:
+      ref: }
