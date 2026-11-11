@@ -26,21 +26,21 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     outputs:
-      sha: }
+      sha: ${{ steps.commit.outputs.sha }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: }
+          ref: main
       - uses: actions/setup-node@v4
         with:
           node-version: 24
       - name: Sync and translate
         env:
-          GITHUB_TOKEN: }
-          TRANSLATOR: }
-          TRANSLATE_BASE_URL: }
-          TRANSLATE_MODEL: }
-          TRANSLATE_API_KEY: }
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TRANSLATOR: ${{ vars.TRANSLATOR }}
+          TRANSLATE_BASE_URL: ${{ vars.TRANSLATE_BASE_URL }}
+          TRANSLATE_MODEL: ${{ vars.TRANSLATE_MODEL }}
+          TRANSLATE_API_KEY: ${{ secrets.TRANSLATE_API_KEY }}
         run: node scripts/sync-comments.mjs
       - name: Commit changes
         id: commit
@@ -58,4 +58,4 @@ jobs:
     needs: sync
     uses: ./.github/workflows/pages.yml
     with:
-      ref: }
+      ref: ${{ needs.sync.outputs.sha }}
