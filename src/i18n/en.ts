@@ -5,7 +5,7 @@ export const en: Strings = {
   locale: "en-US",
   otherLangName: "Español",
   readInOther: "Leer en español",
-  tagline: "Notes and experiments: local LLMs on modest hardware, Linux, homelab and automation.",
+  tagline: "Notes and experiments: local AI on modest hardware, rooted Android, Linux, homelab, game dev and code.",
   siteTitle: "parziva1 — lab notebook",
   skip: "Skip to content",
   nav: { home: "Home", tags: "Tags", about: "About", main: "Main navigation" },
@@ -16,7 +16,7 @@ export const en: Strings = {
   hero: {
     kicker: "lab notebook",
     title: ["Experiments on ", "modest", " hardware."],
-    lede: "Notes and experiments: local LLMs on modest hardware, Linux, homelab and automation.",
+    lede: "Notes and experiments: local AI on modest hardware, rooted Android, Linux, homelab, game dev and code.",
   },
   latest: "Latest notes",
   noPosts: "No published notes yet. Check back soon.",
@@ -65,8 +65,8 @@ export const en: Strings = {
     title: "About",
     description: "What this blog is and who writes it.",
     body: [
-      "I'm parziva1. I write technical notes here about local LLMs on modest hardware, Linux, homelab and automation: what I measure and test on my own machines, including what doesn't work.",
-      "This page is a placeholder; I'll fill it in soon.",
+      "I'm parziva1, a developer in Colombia. I like squeezing everything out of the hardware I already own: AI models running on my laptop, a rooted phone turned into a server, hand-built kernels, a tuned Linux desktop and, when there's time left, games.",
+      "Here I write up what I test and measure on my own machines, with real numbers and the things that didn't work. If something helps you or you spot a mistake, leave a comment: comments are shown in both Spanish and English.",
     ],
   },
   notFound: {

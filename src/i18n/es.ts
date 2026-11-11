@@ -1,9 +1,9 @@
 export const es = {
   lang: "es",
-  locale: "es-ES",
+  locale: "es-CO",
   otherLangName: "English",
   readInOther: "Read in English",
-  tagline: "Notas y experimentos: LLMs locales en hardware modesto, Linux, homelab y automatización.",
+  tagline: "Notas y experimentos: IA local en hardware modesto, Android con root, Linux, homelab, videojuegos y código.",
   siteTitle: "parziva1 — bitácora de laboratorio",
   skip: "Saltar al contenido",
   nav: { home: "Inicio", tags: "Etiquetas", about: "Acerca de", main: "Navegación principal" },
@@ -14,10 +14,10 @@ export const es = {
   hero: {
     kicker: "bitácora de laboratorio",
     title: ["Experimentos en hardware ", "modesto", "."],
-    lede: "Notas y experimentos: LLMs locales en hardware modesto, Linux, homelab y automatización.",
+    lede: "Notas y experimentos: IA local en hardware modesto, Android con root, Linux, homelab, videojuegos y código.",
   },
   latest: "Últimas notas",
-  noPosts: "Aún no hay notas publicadas. Vuelve pronto.",
+  noPosts: "Todavía no hay notas publicadas. Vuelve pronto.",
   minRead: (n: number) => `${n} min de lectura`,
   categories: "Categorías",
   categoryLabel: {
@@ -39,7 +39,7 @@ export const es = {
   updated: "Actualizado",
   cta: {
     title: "Si te sirvió…",
-    text: "Sígueme para más notas de este tipo, o comparte esta con alguien a quien le pueda servir.",
+    text: "Sígueme para ver las próximas notas, o compártela con alguien a quien le sirva.",
     github: "Sígueme en GitHub",
     x: "Sígueme en X",
     share: "Compartir en X",
@@ -48,7 +48,7 @@ export const es = {
   comments: {
     title: "Comentarios",
     intro: "Los comentarios se comparten entre la versión en español y la inglesa.",
-    empty: "Aún no hay comentarios. Sé el primero.",
+    empty: "Todavía no hay comentarios. Sé el primero en comentar.",
     translatedFrom: (l: string) => `traducido del ${l === "en" ? "inglés" : "español"}`,
     showOriginal: "Ver original",
     showTranslation: "Ver traducción",
@@ -63,8 +63,8 @@ export const es = {
     title: "Acerca de",
     description: "Qué es este blog y quién lo escribe.",
     body: [
-      "Soy parziva1. Aquí escribo notas técnicas sobre LLMs locales en hardware modesto, Linux, homelab y automatización: lo que mido y pruebo en mi propio equipo, incluyendo lo que no funciona.",
-      "Esta página es un marcador de posición; la completaré pronto.",
+      "Soy parziva1, programador en Colombia. Me gusta exprimir el hardware que ya tengo: modelos de IA corriendo en mi portátil, un celular con root convertido en servidor, kernels compilados a mano, Linux afinado a mi gusto y, cuando queda tiempo, videojuegos.",
+      "Aquí escribo lo que pruebo y mido en mis propios equipos, con los números reales y también lo que no funcionó. Si algo te sirve o ves un error, déjalo en los comentarios: se leen en español y en inglés.",
     ],
   },
   notFound: {
