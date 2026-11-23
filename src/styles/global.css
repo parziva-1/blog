@@ -404,13 +404,13 @@ a.tag:hover { background: color-mix(in oklab, var(--accent-2) 12%, transparent);
    Loaded last on purpose: it overrides the softer base above.
    ========================================================================= */
 
-/* Titles: Space Grotesk (readable); pixel font only for brand and metric readouts */
+/* Titles and metric readouts: Space Grotesk (readable); pixel font only for the brand wordmark */
 .hero-title { font-size: clamp(2.3rem, 1.1rem + 4.6vw, 4.2rem); line-height: 1.04; font-weight: 700; letter-spacing: -0.03em; }
 .post-title { font-size: clamp(1.9rem, 1rem + 3.4vw, 3.2rem); line-height: 1.08; font-weight: 700; letter-spacing: -0.025em; }
 h1, h2, h3, h4 { letter-spacing: -0.02em; }
 .prose h2 { font-size: clamp(1.4rem, 1.15rem + 0.9vw, 1.75rem); }
 .prose h3 { font-size: 1.2rem; }
-.metric-value { font-family: var(--font-pixel); font-weight: 700; }
+.metric-value { font-weight: 700; } /* legible: Space Grotesk (la fuente pixelada confundía dígitos como 2, 5 y 8) */
 .hero-title em { font-style: normal; color: var(--accent); }
 .prose blockquote { font-family: var(--font-body); font-style: italic; }
 

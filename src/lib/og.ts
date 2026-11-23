@@ -74,7 +74,7 @@ export async function renderOg({ title, category, metric, kicker }: OgInput): Pr
           ]),
           metric
             ? h("div", { flexDirection: "column" }, [
-                h("div", { fontFamily: "Pixelify Sans", fontWeight: 700, fontSize: 84, color: ACCENT, lineHeight: 1 }, metric.value),
+                h("div", { fontFamily: "Space Grotesk", fontWeight: 700, fontSize: 84, color: ACCENT, lineHeight: 1, letterSpacing: -2 }, metric.value),
                 h("div", { fontFamily: "JetBrains Mono", fontSize: 24, color: "#625f6e", marginTop: 8 }, metric.label),
               ])
             : h("div", {}, ""),
