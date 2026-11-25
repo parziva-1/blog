@@ -1,6 +1,6 @@
 ---
 title: "Inkling 2 Mini at 2 bits on a laptop RTX 3050: 27 tok/s and 440 tok/s prefill"
-description: "With UD-IQ2_XXS the whole Inkling 2 Mini loop fits in 6 GB of VRAM and op offload becomes possible again: 27 tok/s generation and ~440 tok/s prefill on an RTX 3050 Laptop, plus a small quality check against Qwen3.6-35B-A3B."
+description: "With UD-IQ2_XXS the whole Inkling 2 Mini loop fits in 6 GB of VRAM and op offload becomes possible again: 27 tok/s generation and ~440 tok/s prefill on an RTX 3050 Laptop, maximum context, the uncensored version and a small quality check against Qwen3.6-35B-A3B."
 pubDate: 2026-11-25T15:30:00-05:00
 tags: [llm, llama.cpp, linux, benchmark]
 category: ia
@@ -27,7 +27,11 @@ Part two of [Inkling 2 Mini on a laptop RTX 3050](/en/posts/inkling-2-mini-rtx-3
 - **Generation: 27 tok/s**, vs 19.5 with UD-Q3_K_XL.
 - **Prefill: ~440 tok/s**, vs 48. With the loop on the GPU, **op offload fits again** in 6 GB.
 - **Quality**, on a small check of 8 verifiable questions: 7/8 (Qwen3.6: 8/8 given enough tokens). Inkling's miss was a made-up fact, not a reasoning error.
+- **Usable context: 32k with the whole loop on the GPU**; up to 128k moving three loop layers to the CPU.
+- **Uncensored**: AtomicChat's AD-IQ2_M gives 370 tok/s prefill and ~24 generation with the same setup.
 - **Versus Qwen3.6-35B-A3B** on the same GPU: Qwen still generates faster (32-34 tok/s), but Inkling answers sooner because it thinks much less.
+
+![Inkling 2 Mini: everything I tried on a 6 GB RTX 3050 Laptop](/images/inkling-2-mini-3050-en.png)
 
 ## Why the quant changes so much
 
@@ -76,6 +80,21 @@ llama-server -m Inkling-2-Mini-UD-IQ2_XXS.gguf --jinja -c 16384 -np 1 \
 
 This GPU also drives the desktop, so 5.7 GB is about the limit. On a dedicated 6 GB card `-ub 1536` probably fits.
 
+## Maximum context
+
+Measured filling 88% of the context with real text (llama.cpp docs) and generating 150 tokens at the end:
+
+| Context | KV | Experts on GPU | Peak VRAM | Prefill (tok/s) | Generation at the end (tok/s) |
+|---|---|---|---|---|---|
+| 16k | q8_0, `-ub 1024` | full loop | 5.8 GB | 467 | 24.8 |
+| **32k** | **q4_0, `-ub 512`** | **full loop** | **5.5 GB** | **358** | **20.7** |
+| 64k | q4_0, `-ub 512` | loop 6-16 | 5.5 GB | 302 | 16.6 |
+| 128k | q4_0, `-ub 512` | loop 6-14 | 5.5 GB | 265 | 12.8 |
+| 256k | — | — | — | doesn't start | — |
+
+- **Starting isn't enough.** With 5.7 GB used at load, 32k with q8 KV starts, but CUDA runs out of memory once the context fills up (`cudaGraphInstantiate`). Leave about 300 MB free at load.
+- **RAM**: the process uses ~4.9 GB. With `-lm none` the outer layers' experts are loaded fully into RAM and the disk isn't read again.
+
 ## Quality: small check against Qwen3.6-35B-A3B
 
 Eight questions in Spanish with verifiable answers: arithmetic, logic, strict formatting, JSON extraction, a Colombian geography fact and a Python function run against five test cases. Temperature 0, reasoning on, 4096 output tokens max.
@@ -101,6 +120,18 @@ With 8192 tokens of headroom, Qwen gets the two missing ones right (275 and 3,23
 ## Strata, for comparison
 
 [Strata](https://github.com/Niko1221/Strata) ships its own Inkling engine: it keeps the most-used experts on the GPU and computes the rest on the CPU. With UD-Q3_K_XL on this GPU it gave **94 tok/s prefill but 9.5 generation**, and its own probe turned DSpark off (1.02x). With the same model, Unsloth's llama.cpp build generated twice as fast (19.5).
+
+## Uncensored version
+
+AtomicChat publishes [Inkling-2-Mini-Uncensored-GGUF](https://huggingface.co/AtomicChat/Inkling-2-Mini-Uncensored-GGUF) two ways: a 44 MB LoRA that applies on top of any GGUF, and files with the change baked in. Both remove the refusal (the base model refuses to explain lock picking; with the change it explains it).
+
+| Same setup, 32k, q4_0 KV | VRAM | Prefill (tok/s) | Generation (tok/s) | Small eval |
+|---|---|---|---|---|
+| UD-IQ2_XXS (censored) | 5.42 GB | ~349 | ~27 | 7/8 |
+| UD-IQ2_XXS + LoRA (`--lora`) | 5.46 GB | 343 | 20.7 | 7/8 |
+| **AD-IQ2_M uncensored (8.7 GB)** | **5.43 GB** | **370** | **23.8** | **7/8** |
+
+The LoRA costs 25% of generation because it adds compute on every layer, including the CPU ones. The baked version weighs about the same as UD-IQ2_XXS without that cost. With the 32k context full, AD-IQ2_M does 367/21.1.
 
 ## Versus Qwen3.6-35B-A3B on the same GPU
 
