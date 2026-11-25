@@ -28,6 +28,7 @@ Inkling 2 Mini (Thinking Machines, Nov 20) shipped with the pitch of "a 26B-clas
 - **Prompt caching works**: a second message with the same prefix reuses 2381 of 2385 tokens. In a chat, only the first message pays for prefill.
 - **DSpark (speculative decoding) doesn't help on 6 GB**: it loads with Unsloth's build, but drops generation to 11-13 tok/s.
 - **Update:** with Unsloth's `b12675-mix` build, **48 tok/s prefill and 19.5 generation** (+26% and +11% over official llama.cpp). See the end.
+- **Part two:** with UD-IQ2_XXS the whole loop fits on the GPU: [27 tok/s and ~440 prefill](/en/posts/inkling-2-mini-iq2-rtx-3050-6gb/).
 - **On this GPU, Qwen3.6-35B-A3B wins**: pp 400-557 and tg 32-34 with MTP.
 
 ## The model

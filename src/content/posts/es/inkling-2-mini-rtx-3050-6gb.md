@@ -28,6 +28,7 @@ Inkling 2 Mini (Thinking Machines, 20-nov) salió con la promesa de "un modelo d
 - **La caché de prompts sí funciona**: el segundo mensaje con el mismo prefijo reusa 2381 de 2385 tokens. En un chat, solo el primer mensaje paga el prefill.
 - **DSpark (decodificación especulativa) no ayuda en 6 GB**: con la build de Unsloth carga, pero baja la generación a 11-13 tok/s.
 - **Actualización:** con la build `b12675-mix` de Unsloth, **48 tok/s de prefill y 19,5 de generación** (+26 % y +11 % frente a llama.cpp oficial). Ver al final.
+- **Segunda parte:** con UD-IQ2_XXS el bucle entero cabe en la GPU: [27 tok/s y ~440 de prefill](/posts/inkling-2-mini-iq2-rtx-3050-6gb/).
 - **En esta GPU, Qwen3.6-35B-A3B le gana**: pp 400-557 y tg 32-34 con MTP.
 
 ## El modelo
