@@ -16,7 +16,7 @@ specs:
   - { label: "GPU", value: "RTX 3050 Laptop, 6 GB VRAM, PCIe 4.0 x8" }
   - { label: "RAM", value: "32 GB DDR5-4800" }
   - { label: "Model", value: "Inkling 2 Mini, Unsloth UD-Q3_K_XL (12.7 GiB)" }
-  - { label: "llama.cpp", value: "b12697 and b12703, CUDA" }
+  - { label: "llama.cpp", value: "b12697, b12703 and Unsloth b12675-mix, CUDA" }
 ---
 
 Inkling 2 Mini (Thinking Machines, Nov 20) shipped with the pitch of "a 26B-class model in 4 GB of VRAM". I ran it on a **6 GB RTX 3050 Laptop**, the same GPU as the [Flint 40B](/en/posts/flint-40b-moe-6gb-vram/) and [LFM3-1.7B](/en/posts/lfm3-1-7b-200k-rtx-3050/) posts, which is also the desktop's primary GPU.
@@ -26,7 +26,8 @@ Inkling 2 Mini (Thinking Machines, Nov 20) shipped with the pitch of "a 26B-clas
 - **Generation: 18-19 tok/s** with the experts of 7-8 loop layers on the GPU. All on CPU: 12.7.
 - **Prefill: ~40 tok/s, and there is no way to raise it on 6 GB.** Op offload asks for 2.9 to 8.2 GB of extra VRAM with this model.
 - **Prompt caching works**: a second message with the same prefix reuses 2381 of 2385 tokens. In a chat, only the first message pays for prefill.
-- **DSpark (speculative decoding) doesn't load yet** on any released llama.cpp build.
+- **DSpark (speculative decoding) doesn't help on 6 GB**: it loads with Unsloth's build, but drops generation to 11-13 tok/s.
+- **Update:** with Unsloth's `b12675-mix` build, **48 tok/s prefill and 19.5 generation** (+26% and +11% over official llama.cpp). See the end.
 - **On this GPU, Qwen3.6-35B-A3B wins**: pp 400-557 and tg 32-34 with MTP.
 
 ## The model
@@ -95,7 +96,7 @@ In practice, the first message of a conversation with a long system prompt (a cl
 
 ## DSpark
 
-Unsloth ships a DSpark draft (`dspark-Inkling-2-Mini-Q8_0.gguf`, 0.5 GB) for speculative decoding. It doesn't load on b12703: `joint_proj.weight` is 5120×768 and the code expects 2816×768. The matching support ([#32218](https://github.com/ggml-org/llama.cpp/pull/32218)) is on `master` but in no release tag yet. The `_Old` file doesn't work either: its vocabulary is 201,024 tokens and the model uses 200,058. Worth retesting once a tag includes #32218.
+Unsloth ships a DSpark draft (`dspark-Inkling-2-Mini-Q8_0.gguf`, 0.5 GB) for speculative decoding. It doesn't load on b12703: `joint_proj.weight` is 5120×768 and the code expects 2816×768. The matching support ([#32218](https://github.com/ggml-org/llama.cpp/pull/32218)) is on `master` but in no release tag yet. The `_Old` file doesn't work either: its vocabulary is 201,024 tokens and the model uses 200,058. It does load with Unsloth's build: see the update at the end.
 
 ## Versus Qwen3.6-35B-A3B on the same GPU
 
@@ -107,8 +108,27 @@ Unsloth ships a DSpark draft (`dspark-Inkling-2-Mini-Q8_0.gguf`, 0.5 GB) for spe
 
 Qwen3.6 uses op offload without trouble and has MTP in llama.cpp. Inkling's model card also warns that quality drops outside English; in Spanish it handled a 700-token technical explanation fine, but I didn't run a quality evaluation.
 
+## Update: Unsloth's build (b12675-mix)
+
+Unsloth publishes llama.cpp builds that merge the official release with about 35 of their own PRs. For Inkling they include banded flash attention for the relative bias ([#386](https://github.com/unslothai/llama.cpp/pull/386)), chunked attention ([#385](https://github.com/unslothai/llama.cpp/pull/385)), DSpark with both drafter layouts ([#405](https://github.com/unslothai/llama.cpp/pull/405)) and fused CUDA kernels for Turing–Ada. Note: **the repo tag doesn't contain those merges**. Building it from source gives `unknown model architecture: 'inkling2_loop'`; use the release binary (`app-b12675-mix-d14fe45-linux-x64-cuda13-older`, which covers sm 75/80/86/89).
+
+Same server, same 2385-token prompt, `-c 16384`, q8 KV, `--no-op-offload -ub 64`:
+
+| Build | Experts on GPU | Prefill (tok/s) | Generation (tok/s) |
+|---|---|---|---|
+| llama.cpp b12703 | loop 6-12 | 38 | 17.6 |
+| **Unsloth b12675-mix** | **loop 6-12** | **48** | **19.5** |
+| Unsloth b12675-mix | loop 6-13 or more | doesn't start | — |
+| Unsloth + DSpark (draft on CPU) | loop 6-12 | 42 | 11.2 |
+| Unsloth + DSpark (draft on GPU) | loop 6-11 | 39 | 13.3 |
+| Unsloth + DSpark (draft on GPU) | loop 6-10 | 36 | 12.3 |
+
+- **+26% prefill and +11% generation** with nothing else changed.
+- **More loop layers on the GPU still don't fit.** This GPU also drives the desktop, so about 5.4 GB is usable in practice.
+- **DSpark loads but isn't worth it here**: 56% of drafted tokens are accepted (2.7 per step on average), and verifying each draft is expensive with the triple loop and most experts on CPU. On cards where the whole loop fits on the GPU it probably pays off.
+
 ## Conclusions
 
-- On a **6 GB RTX 3050 Laptop**, Inkling 2 Mini runs at **18-19 tok/s**, but ~40 tok/s prefill limits it to short prompts or chats where prompt caching amortizes the first message.
+- On a **6 GB RTX 3050 Laptop**, Inkling 2 Mini runs at **19.5 tok/s** with Unsloth's build, but ~40-48 tok/s prefill limits it to short prompts or chats where prompt caching amortizes the first message.
 - The limit isn't the GPU but how llama.cpp currently does op offload for this model. If the copy-only-the-used-experts TODO gets solved, or the attention-mask buffer shrinks, prefill could jump.
-- **For this laptop, Qwen3.6-35B-A3B is still the best local option.** Inkling is worth retesting once DSpark lands in a release.
+- **For this laptop, Qwen3.6-35B-A3B is still the best local option.** Inkling is worth retesting once llama.cpp copies only the used experts during op offload.
