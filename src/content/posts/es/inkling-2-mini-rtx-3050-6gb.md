@@ -1,7 +1,7 @@
 ---
 title: "Inkling 2 Mini en una RTX 3050 de portátil: 19 tok/s generando, 40 leyendo"
 description: "Inkling 2 Mini (26,4B MoE con capas en bucle) en una RTX 3050 Laptop de 6 GB con llama.cpp: qué expertos dejar en GPU, por qué el op offload no cabe, el techo de prefill, la caché de expertos, DSpark y la comparación con Qwen3.6-35B-A3B."
-pubDate: 2026-11-24T23:00:00-05:00
+pubDate: 2026-11-24T21:30:00-05:00
 tags: [llm, llama.cpp, linux, benchmark]
 category: ia
 draft: false

@@ -1,7 +1,7 @@
 ---
 title: "Inkling 2 Mini on a laptop RTX 3050: 19 tok/s generation, 40 tok/s prefill"
 description: "Inkling 2 Mini (26.4B looped MoE) on a 6 GB RTX 3050 Laptop with llama.cpp: which experts to keep on GPU, why op offload doesn't fit, the prefill ceiling, the expert cache, DSpark and how it compares with Qwen3.6-35B-A3B."
-pubDate: 2026-11-24T23:00:00-05:00
+pubDate: 2026-11-24T21:30:00-05:00
 tags: [llm, llama.cpp, linux, benchmark]
 category: ia
 draft: false
